@@ -1,0 +1,14 @@
+# Cache
+__pycache__/
+
+# Environmental variables
+.env
+
+# Virtual Environment
+EP_env/
+venv
+
+# Databases
+app.db 
+instance/
+migrations/
