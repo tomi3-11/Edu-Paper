@@ -15,7 +15,7 @@ function App() {
     <AuthProvider>
       <Router>
         <div className="App">
-          <h1>Club IQ</h1>
+          <h1>Edu-Paper</h1>
           <Routes>
             {/* Public routes */}
             <Route path="/login" element={<Login />} />
