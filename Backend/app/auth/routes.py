@@ -74,6 +74,7 @@ class LoginResource(Resource):
             return {
                 "message": "Invalid email or password."
             }, 401
+            
         
 api.add_resource(RegistrationResource, '/register')
 api.add_resource(LoginResource, '/login')
