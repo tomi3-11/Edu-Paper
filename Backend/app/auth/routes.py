@@ -49,7 +49,6 @@ class RegistrationResource(Resource):
 class LoginResource(Resource):
     def post(self):
         data = request.get_json()
-        print("📩 Incoming data:", data)  # Debugging
         
         email = data.get('email')
         password = data.get('password')
