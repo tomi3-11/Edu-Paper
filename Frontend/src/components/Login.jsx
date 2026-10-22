@@ -25,7 +25,6 @@ function Login() {
             const token = response.data.access_token;
 
             login(token);
-            localStorage.setItem('access_token', token); // store the token
 
             setMessage('Login successful!');
             console.log('Login successful, token stored!')
