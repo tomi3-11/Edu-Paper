@@ -10,7 +10,9 @@ class Config:
         
     SQLALCHEMY_TRACK_MODIFICATION = False
     
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'a-very-hard-to-guess-string'
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    if not SECRET_KEY:
+        raise RuntimeError('SECRET_KEY must be set in the environment before starting the application.')
     
     # Mailing configuration settings
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
