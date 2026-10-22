@@ -8,7 +8,7 @@ function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
-    const { login, isAthenticated } = useContext(AuthContext);
+    const { login, isAuthenticated } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -38,10 +38,10 @@ function Login() {
 
 
     useEffect(() => {
-        if (isAthenticated) {
+        if (isAuthenticated) {
             navigate('/home');
         }
-    }, [isAthenticated, navigate]);
+    }, [isAuthenticated, navigate]);
 
     return (
         <div>
