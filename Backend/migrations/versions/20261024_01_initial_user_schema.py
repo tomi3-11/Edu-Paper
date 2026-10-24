@@ -23,12 +23,10 @@ def upgrade():
         sa.Column("role", sa.String(length=64), nullable=True),
         sa.Column("reset_token", sa.String(length=64), nullable=True),
         sa.PrimaryKeyConstraint("id"),
-        sa.UniqueConstraint("username"),
-        sa.UniqueConstraint("email"),
         sa.UniqueConstraint("reset_token"),
     )
-    op.create_index("ix_user_username", "user", ["username"], unique=False)
-    op.create_index("ix_user_email", "user", ["email"], unique=False)
+    op.create_index("ix_user_username", "user", ["username"], unique=True)
+    op.create_index("ix_user_email", "user", ["email"], unique=True)
 
 
 def downgrade():
