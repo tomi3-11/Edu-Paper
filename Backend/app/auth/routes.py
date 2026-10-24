@@ -14,7 +14,12 @@ csrf.exempt(auth_bp)
 
 class RegistrationResource(Resource): 
     def post(self):
-        data = request.get_json()
+        data = request.get_json(silent=True)
+        if not isinstance(data, dict):
+            return {
+                "message": "Request body must be a JSON object."
+            }, 400
+
         form = RegistrationForm(data=data)
         
         if not form.validate():
@@ -48,7 +53,11 @@ class RegistrationResource(Resource):
     
 class LoginResource(Resource):
     def post(self):
-        data = request.get_json()
+        data = request.get_json(silent=True)
+        if not isinstance(data, dict):
+            return {
+                "message": "Request body must be a JSON object."
+            }, 400
         
         email = data.get('email')
         password = data.get('password')
