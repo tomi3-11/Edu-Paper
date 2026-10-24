@@ -61,6 +61,8 @@ def test_registration_creates_user_with_hashed_password(app, client):
         user = User.query.filter_by(email="newstudent@example.com").one()
         assert user.username == "newstudent"
         assert user.password_hash != "StrongPass123"
+        assert len(user.password_hash) > 120
+        assert User.__table__.columns["password_hash"].type.length == 255
         assert user.check_password("StrongPass123")
 
 
