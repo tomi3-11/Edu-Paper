@@ -13,7 +13,7 @@ function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('/Api/register', {
+            await axios.post('/api/v1/auth/register', {
                 username: userName,
                 email: email,
                 password: password,
@@ -35,7 +35,7 @@ function Register() {
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Username:</label>
-                    <input 
+                    <input
                         type="text"
                         value={userName}
                         onChange={(e) => setUserName(e.target.value)}
@@ -45,7 +45,7 @@ function Register() {
 
                 <div>
                     <label>Email:</label>
-                    <input 
+                    <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -55,7 +55,7 @@ function Register() {
 
                 <div>
                     <label>Password</label>
-                    <input 
+                    <input
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -65,7 +65,7 @@ function Register() {
 
                 <div>
                     <label>Confirm Password:</label>
-                    <input 
+                    <input
                         type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
