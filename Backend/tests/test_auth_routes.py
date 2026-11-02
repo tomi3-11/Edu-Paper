@@ -1,4 +1,5 @@
 import pytest
+from flask_jwt_extended import decode_token
 
 from app import db
 from app.models import User
@@ -180,8 +181,8 @@ def test_login_rejects_wrong_password(app, client):
     assert response.get_json()["message"] == "Invalid email or password."
 
 
-def test_login_returns_access_token_for_valid_credentials(app, client):
-    user_id = make_user(app, username="validstudent", email="valid@example.com")
+def test_login_returns_access_token_with_configured_expiration(app, client):
+    make_user(app, username="validstudent", email="valid@example.com")
 
     response = client.post(
         LOGIN_URL,
@@ -193,3 +194,8 @@ def test_login_returns_access_token_for_valid_credentials(app, client):
     assert isinstance(body.get("access_token"), str)
     assert body["access_token"]
     assert body["message"] == "Login In successfully"
+
+    with app.app_context():
+        claims = decode_token(body["access_token"])
+
+    assert claims["exp"] - claims["iat"] == 15 * 60
