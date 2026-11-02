@@ -1,5 +1,7 @@
 import pytest
-from flask_jwt_extended import decode_token
+from datetime import timedelta
+
+from flask_jwt_extended import create_access_token, decode_token
 
 from app import db
 from app.models import User
@@ -9,6 +11,7 @@ REGISTER_URL = "/api/v1/auth/register"
 LOGIN_URL = "/api/v1/auth/login"
 LEGACY_REGISTER_URL = "/Api/register"
 LEGACY_LOGIN_URL = "/Api/login"
+CURRENT_USER_URL = "/api/v1/users/me"
 
 
 def make_user(app, username="teststudent", email="student@example.com", password="StrongPass123"):
@@ -199,3 +202,77 @@ def test_login_returns_access_token_with_configured_expiration(app, client):
         claims = decode_token(body["access_token"])
 
     assert claims["exp"] - claims["iat"] == 15 * 60
+
+
+
+def test_current_user_endpoint_rejects_missing_token(client):
+    response = client.get(CURRENT_USER_URL)
+
+    assert response.status_code == 401
+
+
+def test_current_user_endpoint_rejects_invalid_token(client):
+    response = client.get(
+        CURRENT_USER_URL,
+        headers={"Authorization": "Bearer not-a-valid-token"},
+    )
+
+    assert response.status_code == 422
+
+
+def test_current_user_endpoint_rejects_expired_token(app, client):
+    user_id = make_user(app)
+
+    with app.app_context():
+        token = create_access_token(
+            identity=str(user_id),
+            expires_delta=timedelta(seconds=-1),
+        )
+
+    response = client.get(
+        CURRENT_USER_URL,
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 401
+
+
+def test_current_user_endpoint_returns_authenticated_user(app, client):
+    user_id = make_user(
+        app,
+        username="currentstudent",
+        email="current@example.com",
+    )
+
+    with app.app_context():
+        token = create_access_token(identity=str(user_id))
+
+    response = client.get(
+        CURRENT_USER_URL,
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 200
+    assert response.get_json() == {
+        "id": user_id,
+        "username": "currentstudent",
+        "role": "member",
+    }
+
+
+def test_current_user_endpoint_returns_not_found_for_deleted_user(app, client):
+    user_id = make_user(app)
+
+    with app.app_context():
+        token = create_access_token(identity=str(user_id))
+        user = db.session.get(User, user_id)
+        db.session.delete(user)
+        db.session.commit()
+
+    response = client.get(
+        CURRENT_USER_URL,
+        headers={"Authorization": f"Bearer {token}"},
+    )
+
+    assert response.status_code == 404
+    assert response.get_json()["message"] == "User not found."
