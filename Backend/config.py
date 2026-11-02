@@ -1,4 +1,6 @@
 import os
+from datetime import timedelta
+
 
 class Config:
     # Using SQLite for development
@@ -7,17 +9,22 @@ class Config:
     else:
         basedir = os.path.abspath(os.path.dirname(__file__))
         SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
-        
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    
+
     SECRET_KEY = os.environ.get('SECRET_KEY')
     if not SECRET_KEY:
         raise RuntimeError('SECRET_KEY must be set in the environment before starting the application.')
-    
+
+    # Access tokens expire after 15 minutes by default. Deployments can override
+    # this with JWT_ACCESS_TOKEN_EXPIRES_MINUTES.
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(
+        minutes=int(os.environ.get('JWT_ACCESS_TOKEN_EXPIRES_MINUTES', '15'))
+    )
+
     # Mailing configuration settings
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = int(os.environ.get('MAIL_PORT') or 587)
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    

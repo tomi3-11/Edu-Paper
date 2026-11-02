@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 # Config is imported when the application package is imported. Keep tests independent
 # of a developer's local environment and never use a production secret here.
@@ -13,13 +14,13 @@ class TestConfig:
     TESTING = True
     SECRET_KEY = "test-only-secret-key"
     JWT_SECRET_KEY = "test-only-jwt-secret-key"
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
     SQLALCHEMY_DATABASE_URI = "sqlite://"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_ENABLED = False
 
 
 @pytest.fixture
-
 def app():
     application = create_app(TestConfig)
 
@@ -34,6 +35,5 @@ def app():
 
 
 @pytest.fixture
-
 def client(app):
     return app.test_client()
