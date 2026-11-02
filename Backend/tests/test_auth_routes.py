@@ -4,8 +4,10 @@ from app import db
 from app.models import User
 
 
-REGISTER_URL = "/Api/register"
-LOGIN_URL = "/Api/login"
+REGISTER_URL = "/api/v1/auth/register"
+LOGIN_URL = "/api/v1/auth/login"
+LEGACY_REGISTER_URL = "/Api/register"
+LEGACY_LOGIN_URL = "/Api/login"
 
 
 def make_user(app, username="teststudent", email="student@example.com", password="StrongPass123"):
@@ -41,6 +43,14 @@ def test_auth_endpoints_reject_missing_malformed_or_non_object_json(
     assert response.get_json() == {
         "message": "Request body must be a JSON object."
     }
+
+
+def test_legacy_auth_routes_remain_available(client):
+    register_response = client.post(LEGACY_REGISTER_URL, json={})
+    login_response = client.post(LEGACY_LOGIN_URL, json={})
+
+    assert register_response.status_code == 400
+    assert login_response.status_code == 400
 
 
 def test_registration_creates_user_with_hashed_password(app, client):
