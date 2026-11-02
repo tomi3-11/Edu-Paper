@@ -13,21 +13,18 @@ function Login() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        // console.log('Attempting to log in with:', email, password);
 
         try {
-            const response = await axios.post('/Api/login', {
+            const response = await axios.post('/api/v1/auth/login', {
                 email,
                 password
             });
 
-            // backend sends a token
             const token = response.data.access_token;
-
             login(token);
 
             setMessage('Login successful!');
-            console.log('Login successful, token stored!')
+            console.log('Login successful, token stored!');
             navigate('/home');
         } catch (error) {
             setMessage(error.response?.data?.message || 'Login failed');
@@ -47,7 +44,7 @@ function Login() {
             <form onSubmit={handleLogin}>
                 <div>
                     <label>Email:</label>
-                    <input 
+                    <input
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -57,7 +54,7 @@ function Login() {
 
                 <div>
                     <label>Password:</label>
-                    <input 
+                    <input
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
