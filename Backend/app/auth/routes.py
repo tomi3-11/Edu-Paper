@@ -3,6 +3,7 @@ from flask import Blueprint, request
 from app.forms import RegistrationForm
 from app.models import User
 from app import db, csrf
+from app.auth.permissions import role_required
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
 auth_bp = Blueprint('auth', __name__)
@@ -36,7 +37,6 @@ class RegistrationResource(Resource):
             return {
                 "message": "Email already exists"
             }, 409
-
         new_user = User(
             username=form.username.data,
             email=form.email.data
@@ -100,6 +100,23 @@ class CurrentUserResource(Resource):
         }, 200
 
 
+class AdminUsersResource(Resource):
+    @role_required("admin")
+    def get(self):
+        users = User.query.order_by(User.id.asc()).all()
+        return {
+            "users": [
+                {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "role": user.role,
+                }
+                for user in users
+            ]
+        }, 200
+
+
 # Keep the original paths available while clients migrate to the versioned API.
 api.add_resource(RegistrationResource, '/Api/register', endpoint='legacy_register')
 api.add_resource(LoginResource, '/Api/login', endpoint='legacy_login')
@@ -108,3 +125,4 @@ api.add_resource(LoginResource, '/Api/login', endpoint='legacy_login')
 api.add_resource(RegistrationResource, '/api/v1/auth/register', endpoint='v1_register')
 api.add_resource(LoginResource, '/api/v1/auth/login', endpoint='v1_login')
 api.add_resource(CurrentUserResource, '/api/v1/users/me', endpoint='v1_current_user')
+api.add_resource(AdminUsersResource, '/api/v1/admin/users', endpoint='v1_admin_users')
