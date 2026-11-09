@@ -2,6 +2,7 @@
 __pycache__/
 
 # Environmental variables
+.env
 
 # Virtual Environment
 EP_env/
@@ -14,5 +15,3 @@ migrations/
 branch_structure.json
 temp_auto_push.bat
 temp_interactive_push.bat
-config.bat
-node_modules
